@@ -6,6 +6,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <Button
+            android:id="@+id/button_fragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="フラグメント生成" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,5 +45,10 @@
             android:layout_height="wrap_content"
             android:text="結果" />
 
+        <LinearLayout
+            android:id="@+id/layout_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"></LinearLayout>
     </LinearLayout>
 </layout>

@@ -19,11 +19,26 @@ class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy { DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main) }
     private val compositeSubscription = CompositeSubscription()
+    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ボタンクリックイベントたち
+        binding.buttonFragment.setOnClickListener { _ ->
+            // Bundle（オブジェクトの入れ物）のインスタンスを作成する
+            val bundle = Bundle()
+            count++
+            // Key/Pairの形で値をセットする
+            bundle.putInt("COUNT", count)
+            // Fragmentに値をセットする
+            val fragment = BlankFragment()
+            fragment.setArguments(bundle)
+            supportFragmentManager.beginTransaction().add(R.id.layout_fragment, fragment).commit()
+        }
         binding.buttonSubmit.setOnClickListener { _ ->
             val zipcode = binding.editText.text.toString()
+            // テキストが空でなければ通信開始
             if (!TextUtils.isEmpty(zipcode)) {
                 compositeSubscription.clear()
                 compositeSubscription.add(
