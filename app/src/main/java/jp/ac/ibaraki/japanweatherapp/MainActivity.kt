@@ -15,47 +15,74 @@ import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import rx.subscriptions.CompositeSubscription
 
+import rx.Observable
+import rx.plugins.RxJavaHooks.onError
+
+
 class MainActivity : AppCompatActivity() {
+
 
     private val binding: ActivityMainBinding by lazy { DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main) }
     private val compositeSubscription = CompositeSubscription()
     private var count = 0
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ボタンクリックイベントたち
-        binding.buttonFragment.setOnClickListener { _ ->
-            // Bundle（オブジェクトの入れ物）のインスタンスを作成する
-            val bundle = Bundle()
-            count++
-            // Key/Pairの形で値をセットする
-            bundle.putInt("COUNT", count)
-            // Fragmentに値をセットする
-            val fragment = BlankFragment()
-            fragment.setArguments(bundle)
-            supportFragmentManager.beginTransaction().add(R.id.layout_fragment, fragment).commit()
+        binding.buttonNext.setOnClickListener {
+            val fragmentManager = supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            // BackStackを設定
+            fragmentTransaction.addToBackStack(null)
+            // パラメータを設定
+            fragmentTransaction.replace(
+                    R.id.container,
+                    RequestFragment()
+            )
+            fragmentTransaction.commit()
         }
-        binding.buttonSubmit.setOnClickListener { _ ->
-            val zipcode = binding.editText.text.toString()
-            // テキストが空でなければ通信開始
-            if (!TextUtils.isEmpty(zipcode)) {
-                compositeSubscription.clear()
-                compositeSubscription.add(
-                        ApiClientManager.apiClient.getZipCode(zipcode)
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doOnNext {
-                                    Log.d(TAG, "rx response=$it")
-                                    binding.textViewResponse.text = Gson().toJson(it)
-                                }
-                                .doOnError {
-                                }
-                                .doOnCompleted {
-                                }
-                                .subscribe())
+
+        /*
+            // ボタンクリックイベントたち
+            binding.buttonFragment.setOnClickListener { _ ->
+                // Bundle（オブジェクトの入れ物）のインスタンスを作成する
+                val bundle = Bundle()
+                count++
+                // Key/Pairの形で値をセットする
+                bundle.putInt("COUNT", count)
+                // Fragmentに値をセットする
+                val fragment = BlankFragment()
+                fragment.setArguments(bundle)
+                supportFragmentManager.beginTransaction().add(R.id.layout_fragment, fragment).commit()
             }
-        }
+            binding.buttonNextFragment.setOnClickListener {
+                val transaction = supportFragmentManager.beginTransaction()
+                transaction.replace(R.id.fragment_place, NextFragment.newInstance("a", "i"))
+                transaction.addToBackStack(null)
+                transaction.commit()
+            }
+            binding.buttonSubmit.setOnClickListener { _ ->
+                val zipcode = binding.editText.text.toString()
+                // テキストが空でなければ通信開始
+                if (!TextUtils.isEmpty(zipcode)) {
+                    compositeSubscription.clear()
+                    compositeSubscription.add(
+                            ApiClientManager.apiClient.getZipCode(zipcode)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doOnNext {
+                                        Log.d(TAG, "rx response=$it")
+                                        binding.textViewResponse.text = Gson().toJson(it)
+                                    }
+                                    .doOnError {
+                                    }
+                                    .doOnCompleted {
+                                    }
+                                    .subscribe())
+                }
+            }
+            */
     }
 
     override fun onDestroy() {
